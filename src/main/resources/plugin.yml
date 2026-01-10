@@ -1,0 +1,11 @@
+name: "LegacyCombatReborn"
+version: "0.1-alpha.1"
+main: org.visuals.legacy.LegacyCombatReborn
+description: "A spigot plugin to restore 1.8/1.7 era combat in 1.21.5+."
+api-version: "1.21.5"
+authors: ["lowercasebtw"]
+contributors: []
+website: https://github.com/Legacy-Visuals-Project/LegacyCombatReborn
+depend: ["packetevents"]
+permissions:
+commands:
