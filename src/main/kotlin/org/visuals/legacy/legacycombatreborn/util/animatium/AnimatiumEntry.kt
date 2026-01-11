@@ -4,5 +4,5 @@ data class AnimatiumData(
 	val version: Double,
 	val developmentVersion: String?,
 	var config: AnimatiumConfigInfo?,
-	val features: Set<ServerFeature>
+	var features: Set<ServerFeature>
 )

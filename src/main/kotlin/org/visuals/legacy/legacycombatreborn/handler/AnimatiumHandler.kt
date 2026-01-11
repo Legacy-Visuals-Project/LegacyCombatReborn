@@ -40,7 +40,11 @@ class AnimatiumHandler : Handler, PacketListener {
 			|| plugin == null
 			|| !plugin!!.config.enabled
 		) return
-		// TODO
+
+		val data = players.get(uuid)!!
+		data.features = features
+
+		// TODO: Send features to client
 	}
 
 	override fun onPacketReceive(event: PacketReceiveEvent?) {
