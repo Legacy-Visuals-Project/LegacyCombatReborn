@@ -1,4 +1,4 @@
-package org.visuals.legacy.util
+package org.visuals.legacy.legacycombatreborn.util
 
 enum class ServerFeature(id: Int) {
     ALL(0),

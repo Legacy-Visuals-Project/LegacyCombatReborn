@@ -1,10 +1,10 @@
-package org.visuals.legacy.handler
+package org.visuals.legacy.legacycombatreborn.handler
 
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketReceiveEvent
-import org.visuals.legacy.LegacyCombatReborn
-import org.visuals.legacy.util.AnimatiumData
-import org.visuals.legacy.util.ServerFeature
+import org.visuals.legacy.legacycombatreborn.LegacyCombatReborn
+import org.visuals.legacy.legacycombatreborn.util.AnimatiumData
+import org.visuals.legacy.legacycombatreborn.util.ServerFeature
 import java.util.*
 
 class AnimatiumHandler : Handler, PacketListener {

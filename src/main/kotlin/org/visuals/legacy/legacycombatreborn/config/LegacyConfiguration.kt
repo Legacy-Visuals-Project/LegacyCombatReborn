@@ -1,8 +1,8 @@
-package org.visuals.legacy.config
+package org.visuals.legacy.legacycombatreborn.config
 
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
-import org.visuals.legacy.LegacyCombatReborn
+import org.visuals.legacy.legacycombatreborn.LegacyCombatReborn
 import java.io.IOException
 import java.nio.file.Files
 
