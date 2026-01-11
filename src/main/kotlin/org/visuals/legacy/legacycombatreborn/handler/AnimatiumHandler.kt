@@ -9,12 +9,9 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage
-import org.bukkit.event.EventHandler
-import org.bukkit.event.player.PlayerJoinEvent
 import org.visuals.legacy.legacycombatreborn.LegacyCombatReborn
 import org.visuals.legacy.legacycombatreborn.util.animatium.*
 import java.util.*
-
 
 class AnimatiumHandler : Handler, PacketListener {
 	private val players: HashMap<UUID, AnimatiumData> = hashMapOf()
@@ -59,11 +56,6 @@ class AnimatiumHandler : Handler, PacketListener {
 		)
 	}
 
-	@EventHandler
-	fun onPlayerJoin(event: PlayerJoinEvent) {
-		applyFeatures(event.player.uniqueId, setOf(ServerFeature.OLD_SNEAK_HEIGHT))
-	}
-
 	override fun onUserDisconnect(event: UserDisconnectEvent?) {
 		if (event == null) return
 		players.remove(event.user.uuid)
@@ -99,8 +91,7 @@ class AnimatiumHandler : Handler, PacketListener {
 			val entries = hashMapOf<String, ConfigEntry<*>>()
 			while (ByteBufHelper.readableBytes(payload) > 0) {
 				val name = payload.readString()
-				val type = payload.readEnum<ConfigEntryType>(ConfigEntryType::class.java)
-				when (type) {
+				when (payload.readEnum<ConfigEntryType>(ConfigEntryType::class.java)) {
 					ConfigEntryType.BOOLEAN -> entries[name] = ConfigEntry(payload.readBoolean())
 					ConfigEntryType.FLOAT -> entries[name] = ConfigEntry(payload.readFloat())
 					ConfigEntryType.ENUM -> entries[name] = ConfigEntry(payload.readEnum(Enum::class.java))
