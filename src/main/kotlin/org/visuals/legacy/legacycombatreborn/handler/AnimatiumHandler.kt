@@ -8,23 +8,23 @@ import org.visuals.legacy.legacycombatreborn.util.ServerFeature
 import java.util.*
 
 class AnimatiumHandler : Handler, PacketListener {
-    private val players: Map<UUID, AnimatiumData> = mapOf()
+	private val players: Map<UUID, AnimatiumData> = mapOf()
 
-    override fun init(plugin: LegacyCombatReborn) {
-    }
+	override fun init(plugin: LegacyCombatReborn) {
+	}
 
-    override fun destroy(plugin: LegacyCombatReborn) {
-    }
+	override fun destroy(plugin: LegacyCombatReborn) {
+	}
 
-    fun get(uuid: UUID): AnimatiumData? {
-        return players[uuid]
-    }
+	fun get(uuid: UUID): AnimatiumData? {
+		return players[uuid]
+	}
 
-    fun applyFeatures(uuid: UUID, features: Set<ServerFeature>) {
-        if (!players.contains(uuid)) return // Doesn't have animatium
-        // TODO;
-    }
+	fun applyFeatures(uuid: UUID, features: Set<ServerFeature>) {
+		if (!players.contains(uuid)) return // Doesn't have animatium
+		// TODO;
+	}
 
-    override fun onPacketReceive(event: PacketReceiveEvent?) {
-    }
+	override fun onPacketReceive(event: PacketReceiveEvent?) {
+	}
 }

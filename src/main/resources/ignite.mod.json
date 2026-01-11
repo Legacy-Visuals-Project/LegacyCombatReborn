@@ -1,7 +1,0 @@
-{
-	"id": "legacycombatreborn",
-	"version": "0.1-alpha.1",
-	"mixins": [
-		"legacycombatreborn.mixins.json"
-	]
-}
