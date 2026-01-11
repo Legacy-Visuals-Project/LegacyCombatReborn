@@ -1,4 +1,4 @@
-package org.visuals.legacy.legacycombatreborn.util
+package org.visuals.legacy.legacycombatreborn.util.animatium
 
 enum class ServerFeature(id: Int) {
 	ALL(0),
