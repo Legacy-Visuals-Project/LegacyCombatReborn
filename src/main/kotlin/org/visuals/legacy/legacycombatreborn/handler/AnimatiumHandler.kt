@@ -36,13 +36,19 @@ class AnimatiumHandler : Handler, PacketListener {
 	}
 
 	fun applyFeatures(uuid: UUID, features: Set<ServerFeature>) {
-		if (!players.contains(uuid)) return // Doesn't have animatium
-
+		if (!players.contains(uuid) // Doesn't have animatium
+			|| plugin == null
+			|| !plugin!!.config.enabled
+		) return
 		// TODO
 	}
 
 	override fun onPacketReceive(event: PacketReceiveEvent?) {
-		if (event == null || event.packetType != PacketType.Play.Server.PLUGIN_MESSAGE) return
+		if (event == null
+			|| event.packetType != PacketType.Play.Server.PLUGIN_MESSAGE
+			|| plugin == null
+			|| !plugin!!.config.enabled
+		) return
 
 		val payload = WrapperPlayClientPluginMessage(event)
 		val id = payload.channelName
