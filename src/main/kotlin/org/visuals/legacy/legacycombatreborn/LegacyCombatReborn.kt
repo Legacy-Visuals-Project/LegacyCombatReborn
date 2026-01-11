@@ -3,7 +3,7 @@ package org.visuals.legacy.legacycombatreborn
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketListenerPriority
-import com.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.bukkit.event.Listener
@@ -19,7 +19,7 @@ class LegacyCombatReborn : JavaPlugin() {
 	val handlers: List<Handler> = listOf(animatium)
 
 	override fun onLoad() {
-		PacketEvents.setApi(SpigotPacketEventsBuilder.build(this))
+		PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
 
 		val api = PacketEvents.getAPI()
 		api.settings
