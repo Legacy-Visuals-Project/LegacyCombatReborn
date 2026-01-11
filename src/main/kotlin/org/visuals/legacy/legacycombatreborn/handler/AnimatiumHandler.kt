@@ -45,7 +45,7 @@ class AnimatiumHandler : Handler, PacketListener {
 
 	override fun onPacketReceive(event: PacketReceiveEvent?) {
 		if (event == null
-			|| event.packetType != PacketType.Play.Server.PLUGIN_MESSAGE
+			|| event.packetType != PacketType.Play.Client.PLUGIN_MESSAGE
 			|| plugin == null
 			|| !plugin!!.config.enabled
 		) return
