@@ -13,6 +13,7 @@ import java.util.*
 
 class AnimatiumHandler : Handler, PacketListener {
 	private val players: HashMap<UUID, AnimatiumData> = hashMapOf()
+	var plugin: LegacyCombatReborn? = null
 
 	companion object {
 		const val INFO_ID = "animatium:info"
@@ -20,6 +21,7 @@ class AnimatiumHandler : Handler, PacketListener {
 	}
 
 	override fun init(plugin: LegacyCombatReborn) {
+		this.plugin = plugin
 	}
 
 	override fun destroy(plugin: LegacyCombatReborn) {
@@ -51,6 +53,7 @@ class AnimatiumHandler : Handler, PacketListener {
 			val version = payload.readDouble()
 			val developmentVersion = payload.readOptional(PacketWrapper<*>::readString)
 			players[uuid] = AnimatiumData(version, developmentVersion, null, setOf())
+			plugin?.logger?.info("Detected ${event.user.name} using Animatium v$version")
 		} else if (id == CONFIG_DATA_ID && players.contains(uuid) /* ? */) {
 			players.get(uuid)!!.config = readConfigData(payload)
 		}
