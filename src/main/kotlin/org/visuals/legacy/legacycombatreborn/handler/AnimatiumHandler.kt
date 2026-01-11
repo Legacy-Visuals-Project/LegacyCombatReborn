@@ -4,15 +4,15 @@ import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.event.UserDisconnectEvent
+import com.github.retrooper.packetevents.netty.buffer.ByteBufHelper
 import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage
+import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
 import org.visuals.legacy.legacycombatreborn.LegacyCombatReborn
-import org.visuals.legacy.legacycombatreborn.util.animatium.AnimatiumConfigInfo
-import org.visuals.legacy.legacycombatreborn.util.animatium.AnimatiumData
-import org.visuals.legacy.legacycombatreborn.util.animatium.ServerFeature
+import org.visuals.legacy.legacycombatreborn.util.animatium.*
 import java.util.*
 
 
@@ -42,10 +42,7 @@ class AnimatiumHandler : Handler, PacketListener {
 	}
 
 	fun applyFeatures(uuid: UUID, features: Set<ServerFeature>) {
-		if (!players.contains(uuid) // Doesn't have animatium
-			|| plugin == null
-			|| !plugin!!.config.enabled
-		) return
+		if (!this.has(uuid) || plugin == null || !plugin!!.config.enabled) return
 
 		val data = players.get(uuid)!!
 		data.features = features
@@ -62,6 +59,7 @@ class AnimatiumHandler : Handler, PacketListener {
 		)
 	}
 
+	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
 		applyFeatures(event.player.uniqueId, setOf(ServerFeature.OLD_SNEAK_HEIGHT))
 	}
@@ -88,16 +86,42 @@ class AnimatiumHandler : Handler, PacketListener {
 			val developmentVersion = payload.readOptional(PacketWrapper<*>::readString)
 			players[uuid] = AnimatiumData(version, developmentVersion, null, setOf())
 			plugin?.logger?.info("Detected ${event.user.name} using Animatium v$version")
-		} else if (id == CONFIG_DATA_ID && players.contains(uuid) /* ? */) {
+		} else if (id == CONFIG_DATA_ID && this.has(uuid) /* ? */) {
 			players.get(uuid)!!.config = readConfigData(payload)
 		}
 	}
 
-	private fun readConfigData(payload: PacketWrapper<*>): AnimatiumConfigInfo? {
+	private fun readConfigData(payload: PacketWrapper<*>): AnimatiumConfigInfo {
+		val categories = hashMapOf<String, HashMap<String, ConfigEntry<*>>>()
+
 		val count = payload.readByte()
 		for (i in 0..count) {
+			val entries = hashMapOf<String, ConfigEntry<*>>()
+			while (ByteBufHelper.readableBytes(payload) > 0) {
+				val name = payload.readString()
+				val type = payload.readEnum<ConfigEntryType>(ConfigEntryType::class.java)
+				when (type) {
+					ConfigEntryType.BOOLEAN -> entries[name] = ConfigEntry(payload.readBoolean())
+					ConfigEntryType.FLOAT -> entries[name] = ConfigEntry(payload.readFloat())
+					ConfigEntryType.ENUM -> entries[name] = ConfigEntry(payload.readEnum(Enum::class.java))
+					else -> throw RuntimeException("Unexpected config data entry type")
+				}
+			}
+			categories[getCategoryNameById(i)] = entries
 		}
 
-		return null // TODO
+		return AnimatiumConfigInfo(categories)
+	}
+
+	private fun getCategoryNameById(id: Int): String {
+		return when (id) {
+			0 -> "movement"
+			1 -> "items"
+			2 -> "screen"
+			3 -> "fixes"
+			4 -> "other"
+			5 -> "extras"
+			else -> throw RuntimeException("Unexpected config category id")
+		}
 	}
 }

@@ -1,4 +1,3 @@
 package org.visuals.legacy.legacycombatreborn.util.animatium
 
-// TODO
-data object AnimatiumConfigInfo
+data class AnimatiumConfigInfo(val categories: Map<String, HashMap<String, ConfigEntry<*>>>)
