@@ -1,6 +1,10 @@
 ## LegacyCombatReborn
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C31INYGG)
+
 A spigot plugin to restore 1.8/1.7 era combat in 1.21.5+.
+
+Join our discord: https://discord.gg/C8KKgbA8jy
 
 ## Notes
 
