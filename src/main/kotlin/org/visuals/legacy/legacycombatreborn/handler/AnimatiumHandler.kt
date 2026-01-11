@@ -1,15 +1,20 @@
 package org.visuals.legacy.legacycombatreborn.handler
 
+import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketReceiveEvent
+import com.github.retrooper.packetevents.event.UserDisconnectEvent
 import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage
+import org.bukkit.event.player.PlayerJoinEvent
 import org.visuals.legacy.legacycombatreborn.LegacyCombatReborn
 import org.visuals.legacy.legacycombatreborn.util.animatium.AnimatiumConfigInfo
 import org.visuals.legacy.legacycombatreborn.util.animatium.AnimatiumData
 import org.visuals.legacy.legacycombatreborn.util.animatium.ServerFeature
 import java.util.*
+
 
 class AnimatiumHandler : Handler, PacketListener {
 	private val players: HashMap<UUID, AnimatiumData> = hashMapOf()
@@ -18,6 +23,7 @@ class AnimatiumHandler : Handler, PacketListener {
 	companion object {
 		const val INFO_ID = "animatium:info"
 		const val CONFIG_DATA_ID = "animatium:config_data"
+		const val SET_SERVER_FEATURES_ID = "animatium:set_server_features"
 	}
 
 	override fun init(plugin: LegacyCombatReborn) {
@@ -44,7 +50,25 @@ class AnimatiumHandler : Handler, PacketListener {
 		val data = players.get(uuid)!!
 		data.features = features
 
-		// TODO: Send features to client
+		val bitSet = BitSet()
+		for (feature in features) {
+			bitSet.set(feature.id)
+		}
+
+		val player = plugin!!.server.getPlayer(uuid)!!
+		PacketEvents.getAPI().playerManager.sendPacket(
+			player,
+			WrapperPlayServerPluginMessage(SET_SERVER_FEATURES_ID, bitSet.toByteArray())
+		)
+	}
+
+	fun onPlayerJoin(event: PlayerJoinEvent) {
+		applyFeatures(event.player.uniqueId, setOf(ServerFeature.OLD_SNEAK_HEIGHT))
+	}
+
+	override fun onUserDisconnect(event: UserDisconnectEvent?) {
+		if (event == null) return
+		players.remove(event.user.uuid)
 	}
 
 	override fun onPacketReceive(event: PacketReceiveEvent?) {

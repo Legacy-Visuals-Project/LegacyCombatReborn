@@ -1,6 +1,6 @@
 package org.visuals.legacy.legacycombatreborn.util.animatium
 
-enum class ServerFeature(id: Int) {
+enum class ServerFeature(val id: Int) {
 	ALL(0),
 	MISS_PENALTY(1),
 	LEFT_CLICK_ITEM_USAGE(2),
