@@ -25,7 +25,6 @@ class LegacyCombatReborn : JavaPlugin() {
 		api.settings
 			.reEncodeByDefault(false)
 			.checkForUpdates(true)
-			.bStats(false)
 		api.load()
 	}
 
