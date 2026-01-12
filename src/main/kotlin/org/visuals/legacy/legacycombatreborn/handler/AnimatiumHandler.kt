@@ -6,7 +6,6 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.event.UserDisconnectEvent
 import com.github.retrooper.packetevents.netty.buffer.ByteBufHelper
 import com.github.retrooper.packetevents.protocol.packettype.PacketType
-import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage
 import io.netty.buffer.Unpooled
@@ -84,24 +83,26 @@ class AnimatiumHandler : Handler, PacketListener {
 			players[uuid] = AnimatiumData(version, developmentVersion, null, setOf())
 			plugin?.logger?.info("Detected ${event.user.name} using Animatium v$version")
 		} else if (id == CONFIG_DATA_ID && this.has(uuid) /* ? */) {
-			players[uuid]!!.config = readConfigData(payload)
+			players[uuid]!!.config = readConfigData(reader)
 			plugin?.logger?.info("${event.user.name} loaded ${players[uuid]!!.config!!.categories.size} categories")
 		}
 	}
 
 	// TODO: Fix in Animatium
-	private fun readConfigData(payload: PacketWrapper<*>): AnimatiumConfigInfo {
+	private fun readConfigData(reader: FriendlyByteBuf): AnimatiumConfigInfo {
 		val categories = hashMapOf<String, HashMap<String, ConfigEntry<*>>>()
 
-		val count = payload.readByte()
+		val count = reader.readByte()
 		for (i in 0..count) {
 			val entries = hashMapOf<String, ConfigEntry<*>>()
-			while (ByteBufHelper.readableBytes(payload) > 0) {
-				entries[payload.readString()] = when (payload.readEnum<ConfigEntryType>(ConfigEntryType::class.java)) {
-					ConfigEntryType.BOOLEAN -> ConfigEntry(payload.readBoolean())
-					ConfigEntryType.FLOAT -> ConfigEntry(payload.readFloat())
-					ConfigEntryType.ENUM -> ConfigEntry(payload.readEnum(Enum::class.java))
-					else -> throw RuntimeException("Unexpected config data entry type")
+			while (reader.readerIndex() < reader.array().size) {
+				entries[reader.readUtf()] = when (reader.readEnum(ConfigEntryType::class.java)) {
+					ConfigEntryType.BOOLEAN -> ConfigEntry(reader.readBoolean())
+					ConfigEntryType.FLOAT -> ConfigEntry(reader.readFloat())
+					ConfigEntryType.ENUM -> {
+						ConfigEntry(null) // TODO
+						// ConfigEntry(reader.readEnum(Enum::class.java))
+					}
 				}
 			}
 			categories[getCategoryNameById(i)] = entries
