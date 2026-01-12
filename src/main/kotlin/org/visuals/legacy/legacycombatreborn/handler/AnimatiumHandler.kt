@@ -9,6 +9,8 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage
+import io.netty.buffer.Unpooled
+import net.minecraft.network.FriendlyByteBuf
 import org.visuals.legacy.legacycombatreborn.LegacyCombatReborn
 import org.visuals.legacy.legacycombatreborn.util.animatium.*
 import java.util.*
@@ -18,9 +20,10 @@ class AnimatiumHandler : Handler, PacketListener {
 	var plugin: LegacyCombatReborn? = null
 
 	companion object {
-		const val INFO_ID = "animatium:info"
-		const val CONFIG_DATA_ID = "animatium:config_data"
-		const val SET_SERVER_FEATURES_ID = "animatium:set_server_features"
+		const val ID = "animatium";
+		const val INFO_ID = "$ID:info"
+		const val CONFIG_DATA_ID = "$ID:config_data"
+		const val SET_SERVER_FEATURES_ID = "$ID:set_server_features"
 	}
 
 	override fun init(plugin: LegacyCombatReborn) {
@@ -70,18 +73,20 @@ class AnimatiumHandler : Handler, PacketListener {
 
 		val payload = WrapperPlayClientPluginMessage(event)
 		val id = payload.channelName
-		if (!id.startsWith("animatium")) return
+		if (!id.startsWith(ID)) return
+
+		val reader = FriendlyByteBuf(Unpooled.wrappedBuffer(payload.data))
 
 		val uuid = event.user.uuid
 		if (id == INFO_ID) {
-			val version = payload.readDouble()
-			val developmentVersion = payload.readOptional(PacketWrapper<*>::readString)
+			val version = reader.readDouble()
+			val developmentVersion = reader.readOptional(FriendlyByteBuf::readUtf)
 			players[uuid] = AnimatiumData(version, developmentVersion, null, setOf())
 			plugin?.logger?.info("Detected ${event.user.name} using Animatium v$version")
-		}
-		/*else if (id == CONFIG_DATA_ID && this.has(uuid) /* ? */) {
+		} else if (id == CONFIG_DATA_ID && this.has(uuid) /* ? */) {
 			players[uuid]!!.config = readConfigData(payload)
-		}*/
+			plugin?.logger?.info("${event.user.name} loaded ${players[uuid]!!.config!!.categories.size} categories")
+		}
 	}
 
 	// TODO: Fix in Animatium

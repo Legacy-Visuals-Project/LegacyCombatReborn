@@ -1,16 +1,24 @@
 plugins {
 	kotlin("jvm") version "2.3.0"
 	id("com.gradleup.shadow") version "9.3.1"
+	id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	val javaVersion = JavaVersion.VERSION_21
+	sourceCompatibility = javaVersion
+	targetCompatibility = javaVersion
 	toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 kotlin {
 	jvmToolchain(21)
+}
+
+paperweight {
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 repositories {
@@ -30,7 +38,7 @@ repositories {
 dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
-	compileOnly("io.papermc.paper:paper-api:${property("paper_version")}")
+	paperweight.paperDevBundle(property("paper_version") as String)
 	compileOnly("com.github.retrooper:packetevents-spigot:${property("packet_events_version")}")
 }
 
