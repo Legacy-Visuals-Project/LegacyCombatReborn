@@ -9,14 +9,20 @@ import org.apache.logging.log4j.Logger
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.visuals.legacy.legacycombatreborn.config.LegacyConfiguration
-import org.visuals.legacy.legacycombatreborn.handler.AnimatiumHandler
-import org.visuals.legacy.legacycombatreborn.handler.Handler
+import org.visuals.legacy.legacycombatreborn.handler.*
 
 class LegacyCombatReborn : JavaPlugin() {
 	val logger: Logger = LogManager.getLogger("LegacyCombatReborn")
 	val config = LegacyConfiguration()
 	val animatium = AnimatiumHandler()
-	val handlers: List<Handler> = listOf(animatium)
+	val handlers: List<Handler> = listOf(
+		animatium,
+		TestHandler(),
+		KnockbackHandler(),
+		CombatHandler(),
+		ArmorHandler(),
+		ItemHandler()
+	)
 
 	override fun onLoad() {
 		PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
