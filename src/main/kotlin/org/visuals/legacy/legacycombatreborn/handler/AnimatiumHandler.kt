@@ -41,7 +41,7 @@ class AnimatiumHandler : Handler, PacketListener {
 	fun applyFeatures(uuid: UUID, features: Set<ServerFeature>) {
 		if (!this.has(uuid) || plugin == null || !plugin!!.config.enabled) return
 
-		val data = players.get(uuid)!!
+		val data = players[uuid]!!
 		data.features = features
 
 		val bitSet = BitSet()
@@ -78,11 +78,13 @@ class AnimatiumHandler : Handler, PacketListener {
 			val developmentVersion = payload.readOptional(PacketWrapper<*>::readString)
 			players[uuid] = AnimatiumData(version, developmentVersion, null, setOf())
 			plugin?.logger?.info("Detected ${event.user.name} using Animatium v$version")
-		} else if (id == CONFIG_DATA_ID && this.has(uuid) /* ? */) {
-			players.get(uuid)!!.config = readConfigData(payload)
 		}
+		/*else if (id == CONFIG_DATA_ID && this.has(uuid) /* ? */) {
+			players[uuid]!!.config = readConfigData(payload)
+		}*/
 	}
 
+	// TODO: Fix in Animatium
 	private fun readConfigData(payload: PacketWrapper<*>): AnimatiumConfigInfo {
 		val categories = hashMapOf<String, HashMap<String, ConfigEntry<*>>>()
 
@@ -90,11 +92,10 @@ class AnimatiumHandler : Handler, PacketListener {
 		for (i in 0..count) {
 			val entries = hashMapOf<String, ConfigEntry<*>>()
 			while (ByteBufHelper.readableBytes(payload) > 0) {
-				val name = payload.readString()
-				when (payload.readEnum<ConfigEntryType>(ConfigEntryType::class.java)) {
-					ConfigEntryType.BOOLEAN -> entries[name] = ConfigEntry(payload.readBoolean())
-					ConfigEntryType.FLOAT -> entries[name] = ConfigEntry(payload.readFloat())
-					ConfigEntryType.ENUM -> entries[name] = ConfigEntry(payload.readEnum(Enum::class.java))
+				entries[payload.readString()] = when (payload.readEnum<ConfigEntryType>(ConfigEntryType::class.java)) {
+					ConfigEntryType.BOOLEAN -> ConfigEntry(payload.readBoolean())
+					ConfigEntryType.FLOAT -> ConfigEntry(payload.readFloat())
+					ConfigEntryType.ENUM -> ConfigEntry(payload.readEnum(Enum::class.java))
 					else -> throw RuntimeException("Unexpected config data entry type")
 				}
 			}

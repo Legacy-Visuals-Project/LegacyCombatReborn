@@ -44,7 +44,7 @@ class LegacyCombatReborn : JavaPlugin() {
 				api.eventManager.registerListener(handler, PacketListenerPriority.HIGH)
 			}
 		}
-		
+
 		api.init()
 	}
 
